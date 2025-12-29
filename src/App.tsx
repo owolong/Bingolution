@@ -1,8 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { motion, AnimatePresence } from 'motion/react';
 import html2canvas from 'html2canvas';
-import jsPDF from 'jspdf';
-import { ArrowLeft, Image as ImageIcon, FileText, Shuffle } from 'lucide-react';
+import { ArrowLeft, Image as ImageIcon, Shuffle } from 'lucide-react';
 import InputSection from './components/InputSection';
 import BingoCard from './components/BingoCard';
 import { DEFAULT_RESOLUTIONS, ResolutionModeKey } from './constants';
@@ -43,55 +42,59 @@ function App() {
     setResolutions(shuffled);
   };
 
-  const handleDownloadJpg = async () => {
+  const handleDownload = async () => {
     if (!cardRef.current) return;
     setIsExporting(true);
     try {
       await new Promise(resolve => setTimeout(resolve, 100));
       
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
+      // 1. Capture the bingo card at high resolution
+      const cardCanvas = await html2canvas(cardRef.current, {
+        scale: 2, // High quality capture
         useCORS: true,
         backgroundColor: '#ffffff',
         logging: false,
       });
-      const link = document.createElement('a');
-      link.download = 'resolution-bingo.jpg';
-      link.href = canvas.toDataURL('image/jpeg', 0.9);
-      link.click();
-    } catch (err) {
-      console.error("Export failed", err);
-    }
-    setIsExporting(false);
-  };
 
-  const handleDownloadPdf = async () => {
-    if (!cardRef.current) return;
-    setIsExporting(true);
-    try {
-      await new Promise(resolve => setTimeout(resolve, 100));
+      // 2. Create a new canvas representing an A4 sheet
+      // A4 is 210mm x 297mm (Ratio: 1.414)
+      // We'll base the dimensions on the card width to ensure good resolution.
+      // Let's say we want the card to take up about 80% of the A4 width.
       
-      const canvas = await html2canvas(cardRef.current, {
-        scale: 2,
-        useCORS: true,
-        backgroundColor: '#ffffff',
-        logging: false,
-      });
-      const imgData = canvas.toDataURL('image/jpeg', 1.0);
+      const cardWidth = cardCanvas.width;
+      const cardHeight = cardCanvas.height;
       
-      const pdf = new jsPDF('p', 'mm', 'a4');
-      const pdfWidth = pdf.internal.pageSize.getWidth();
-      const pdfHeight = pdf.internal.pageSize.getHeight();
-      
-      const imgProps = pdf.getImageProperties(imgData);
-      const imgWidth = pdfWidth - 20;
-      const imgHeight = (imgProps.height * imgWidth) / imgProps.width;
-      
-      const x = 10;
-      const y = (pdfHeight - imgHeight) / 2;
+      // Target A4 Width = Card Width / 0.8 (so card has 10% margin on each side)
+      // Actually, let's just make it fit nicely.
+      // Card is 800px (scaled by 2 = 1600px).
+      // Let's set A4 width to be slightly larger than card width.
+      // Let's use a fixed margin approach.
+      const margin = 100; // pixels
+      const a4Width = cardWidth + (margin * 2);
+      const a4Height = Math.floor(a4Width * 1.4142); // A4 Aspect Ratio
 
-      pdf.addImage(imgData, 'JPEG', x, y, imgWidth, imgHeight);
-      pdf.save('resolution-bingo.pdf');
+      const finalCanvas = document.createElement('canvas');
+      finalCanvas.width = a4Width;
+      finalCanvas.height = a4Height;
+      const ctx = finalCanvas.getContext('2d');
+
+      if (ctx) {
+        // Fill with white background (paper)
+        ctx.fillStyle = '#ffffff';
+        ctx.fillRect(0, 0, a4Width, a4Height);
+
+        // Draw the card centered
+        const x = (a4Width - cardWidth) / 2;
+        const y = (a4Height - cardHeight) / 2;
+        
+        ctx.drawImage(cardCanvas, x, y);
+
+        // Download the final A4 image
+        const link = document.createElement('a');
+        link.download = 'bingolution-card.jpg';
+        link.href = finalCanvas.toDataURL('image/jpeg', 0.9);
+        link.click();
+      }
     } catch (err) {
       console.error("Export failed", err);
     }
@@ -159,18 +162,11 @@ function App() {
                 </button>
                 <div className="w-px h-8 bg-gray-300 mx-1 hidden sm:block"></div>
                 <button
-                  onClick={handleDownloadJpg}
+                  onClick={handleDownload}
                   disabled={isExporting}
-                  className="flex items-center gap-2 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm md:text-base"
+                  className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm md:text-base"
                 >
-                  {isExporting ? '...' : <><ImageIcon size={18} /> JPG</>}
-                </button>
-                <button
-                  onClick={handleDownloadPdf}
-                  disabled={isExporting}
-                  className="flex items-center gap-2 px-4 py-2 bg-red-600 text-white rounded-lg hover:bg-red-700 font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm md:text-base"
-                >
-                  {isExporting ? '...' : <><FileText size={18} /> PDF</>}
+                  {isExporting ? 'Generating...' : <><ImageIcon size={18} /> Download</>}
                 </button>
               </div>
 
