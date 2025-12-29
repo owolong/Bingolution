@@ -134,33 +134,35 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
   const renderHeaderDecoration = () => {
     switch (theme) {
       case 'kitty':
-        // Use the first icon color from the variant for the main header icon
-        const headerIconColor = KITTY_VARIANTS[kittyVariant].iconColors[3]; // Usually the darkest/strongest color
-        // Need to extract the color class name part to construct the border color if needed, 
-        // but for now let's just use the text color class directly on the icon.
-        // The border of the circle is hardcoded to pink-400 in the original, we should probably match the theme.
-        // Let's try to map the border color from the theme colors.
-        
-        // We can use the outerBorder color from the theme for the circle border
-        const borderColorClass = colors.outerBorder;
+        const headerIconColor = KITTY_VARIANTS[kittyVariant].iconColors[3]; 
+        const borderColor = colors.outerBorder;
 
         return (
-          <div className={`absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 ${borderColorClass} z-10`}>
-            <Cat size={48} className={headerIconColor} />
+          <div 
+            className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 z-10"
+            style={{ borderColor: borderColor, color: headerIconColor }}
+          >
+            <Cat size={48} />
           </div>
         );
       case 'puppy':
         return (
-          <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 border-orange-400 z-10">
-            <Dog size={48} className="text-orange-500" />
+          <div 
+            className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 z-10"
+            style={{ borderColor: '#fb923c', color: '#f97316' }}
+          >
+            <Dog size={48} />
           </div>
         );
       case 'pokemon':
         return null; // Header text is the decoration
       case 'sushi':
         return (
-          <div className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 border-red-500 z-10">
-            <Fish size={48} className="text-red-500" />
+          <div 
+            className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 z-10"
+            style={{ borderColor: '#ef4444', color: '#ef4444' }}
+          >
+            <Fish size={48} />
           </div>
         );
       default:
@@ -171,8 +173,12 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
   return (
     <div 
       ref={ref} 
-      className={`w-[800px] h-[1000px] ${colors.background} p-12 flex flex-col items-center shadow-2xl mx-auto text-gray-900 relative overflow-hidden`}
-      style={{ minWidth: '800px', minHeight: '1000px' }}
+      className={`w-[800px] h-[1000px] p-12 flex flex-col items-center shadow-2xl mx-auto text-gray-900 relative overflow-hidden`}
+      style={{ 
+        minWidth: '800px', 
+        minHeight: '1000px',
+        backgroundColor: colors.background
+      }}
     >
       {/* Border Icons */}
       <div className="absolute inset-0 pointer-events-none overflow-hidden">
@@ -181,7 +187,14 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
 
       {renderHeaderDecoration()}
 
-      <div className={`w-full ${colors.header} ${colors.headerText} py-8 rounded-t-xl mb-6 relative z-0 shadow-md mt-4`}>
+      <div 
+        className={`w-full py-8 rounded-t-xl mb-6 relative z-0 shadow-md mt-4`}
+        style={{ 
+          background: colors.header, 
+          color: colors.headerText,
+          border: colors.headerBorder ? `4px solid ${colors.headerBorder}` : 'none'
+        }}
+      >
         <h1 
           className="text-6xl font-black text-center tracking-widest uppercase drop-shadow-md"
           style={theme === 'pokemon' ? {
@@ -196,7 +209,13 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
         </h1>
       </div>
 
-      <div className={`grid grid-cols-5 grid-rows-5 gap-4 w-full h-full flex-grow border-4 ${colors.outerBorder} ${colors.grid} p-4 rounded-b-xl relative z-0`}>
+      <div 
+        className={`grid grid-cols-5 grid-rows-5 gap-4 w-full h-full flex-grow border-4 p-4 rounded-b-xl relative z-0`}
+        style={{ 
+          backgroundColor: colors.grid,
+          borderColor: colors.outerBorder
+        }}
+      >
         {gridItems.map((item, index) => {
           const isFreeSpace = enableFreeSpace && index === 12;
           return (
@@ -205,16 +224,21 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
               className={`
                 relative flex items-center justify-center p-2 text-center select-none
                 ${isFreeSpace 
-                  ? `${colors.freeSpace} ${colors.freeSpaceText} font-black text-2xl rotate-0` 
-                  : `${colors.cell} ${colors.cellText} font-bold text-lg`
+                  ? `font-black text-2xl rotate-0` 
+                  : `font-bold text-lg`
                 }
-                rounded-lg shadow-sm border-2 ${colors.border}
+                rounded-lg shadow-sm border-2
               `}
+              style={{
+                backgroundColor: isFreeSpace ? colors.freeSpace : colors.cell,
+                color: isFreeSpace ? colors.freeSpaceText : colors.cellText,
+                borderColor: colors.border
+              }}
             >
               {isFreeSpace && (
                 <div className="absolute inset-0 opacity-20 pointer-events-none flex items-center justify-center">
                   {theme === 'kitty' ? <Cat size={64} /> :
-                   theme === 'corgi' ? <Dog size={64} /> :
+                   theme === 'puppy' ? <Dog size={64} /> :
                    theme === 'pokemon' ? <CircleDot size={64} /> :
                    theme === 'sushi' ? <Fish size={64} /> :
                    <Star className="text-6xl" />

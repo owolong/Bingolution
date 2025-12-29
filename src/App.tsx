@@ -58,17 +58,9 @@ function App() {
 
       // 2. Create a new canvas representing an A4 sheet
       // A4 is 210mm x 297mm (Ratio: 1.414)
-      // We'll base the dimensions on the card width to ensure good resolution.
-      // Let's say we want the card to take up about 80% of the A4 width.
-      
       const cardWidth = cardCanvas.width;
       const cardHeight = cardCanvas.height;
       
-      // Target A4 Width = Card Width / 0.8 (so card has 10% margin on each side)
-      // Actually, let's just make it fit nicely.
-      // Card is 800px (scaled by 2 = 1600px).
-      // Let's set A4 width to be slightly larger than card width.
-      // Let's use a fixed margin approach.
       const margin = 100; // pixels
       const a4Width = cardWidth + (margin * 2);
       const a4Height = Math.floor(a4Width * 1.4142); // A4 Aspect Ratio
@@ -89,11 +81,32 @@ function App() {
         
         ctx.drawImage(cardCanvas, x, y);
 
-        // Download the final A4 image
-        const link = document.createElement('a');
-        link.download = 'bingolution-card.jpg';
-        link.href = finalCanvas.toDataURL('image/jpeg', 0.9);
-        link.click();
+        // Open in new window
+        const dataUrl = finalCanvas.toDataURL('image/jpeg', 0.9);
+        const newWindow = window.open();
+        if (newWindow) {
+          newWindow.document.write(`
+            <html>
+              <head>
+                <title>Bingolution Card</title>
+                <style>
+                  body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; }
+                  img { max-width: 100%; height: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
+                </style>
+              </head>
+              <body>
+                <img src="${dataUrl}" alt="Bingo Card" />
+              </body>
+            </html>
+          `);
+          newWindow.document.close();
+        } else {
+          // Fallback if popup blocked
+          const link = document.createElement('a');
+          link.download = 'bingolution-card.jpg';
+          link.href = dataUrl;
+          link.click();
+        }
       }
     } catch (err) {
       console.error("Export failed", err);
@@ -111,6 +124,20 @@ function App() {
       </header>
 
       <main className="container mx-auto px-4 pb-20">
+        {/* Hidden container for high-res export - Always rendered to ensure ref is available */}
+        <div className="fixed top-0 left-0 pointer-events-none opacity-0 overflow-hidden w-0 h-0">
+           <div className="bg-white p-0 inline-block"> 
+              <BingoCard 
+                ref={cardRef} 
+                resolutions={resolutions} 
+                enableFreeSpace={enableFreeSpace}
+                freeSpaceText={freeSpaceText}
+                theme={theme}
+                kittyVariant={kittyVariant}
+              />
+           </div>
+         </div>
+
         <AnimatePresence mode="wait">
           {view === 'input' ? (
             <motion.div
@@ -123,7 +150,14 @@ function App() {
               <InputSection 
                 resolutions={resolutions} 
                 setResolutions={setResolutions} 
-                onGenerate={() => setView('preview')}
+                onGenerate={() => {
+                  // Generate (switch view) and download
+                  setView('preview');
+                  // We need to wait a bit for the view to switch? 
+                  // Actually, since the card is now always rendered, we can download immediately.
+                  // But let's give the user visual feedback of the switch first.
+                  setTimeout(handleDownload, 500);
+                }}
                 enableFreeSpace={enableFreeSpace}
                 setEnableFreeSpace={setEnableFreeSpace}
                 freeSpaceText={freeSpaceText}
@@ -134,6 +168,7 @@ function App() {
                 setKittyVariant={setKittyVariant}
                 resolutionMode={resolutionMode}
                 setResolutionMode={setResolutionMode}
+                isExporting={isExporting}
               />
             </motion.div>
           ) : (
@@ -166,23 +201,9 @@ function App() {
                   disabled={isExporting}
                   className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm md:text-base"
                 >
-                  {isExporting ? 'Generating...' : <><ImageIcon size={18} /> Download</>}
+                  {isExporting ? 'Generating...' : <><ImageIcon size={18} /> Open JPG</>}
                 </button>
               </div>
-
-              {/* Hidden container for high-res export */}
-              <div className="fixed top-0 left-[10000px]">
-                 <div className="bg-white p-0"> 
-                    <BingoCard 
-                      ref={cardRef} 
-                      resolutions={resolutions} 
-                      enableFreeSpace={enableFreeSpace}
-                      freeSpaceText={freeSpaceText}
-                      theme={theme}
-                      kittyVariant={kittyVariant}
-                    />
-                 </div>
-               </div>
 
                {/* Visible Preview */}
                <div className="flex flex-col items-center gap-2 w-full max-w-[500px]">

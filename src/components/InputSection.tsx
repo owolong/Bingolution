@@ -17,6 +17,7 @@ interface InputSectionProps {
   setKittyVariant: (variant: KittyVariant) => void;
   resolutionMode: ResolutionModeKey;
   setResolutionMode: (mode: ResolutionModeKey) => void;
+  isExporting?: boolean;
 }
 
 const InputSection: React.FC<InputSectionProps> = ({ 
@@ -32,7 +33,8 @@ const InputSection: React.FC<InputSectionProps> = ({
   kittyVariant,
   setKittyVariant,
   resolutionMode,
-  setResolutionMode
+  setResolutionMode,
+  isExporting = false
 }) => {
   
   const handleChange = (index: number, value: string) => {
@@ -223,7 +225,12 @@ const InputSection: React.FC<InputSectionProps> = ({
                 theme === t.id 
                   ? 'ring-2 ring-offset-2 ring-indigo-500 shadow-md scale-105' 
                   : 'hover:bg-gray-200'
-              } ${t.colors.header} ${t.colors.headerText}`}
+              }`}
+              style={{ 
+                background: t.colors.header, 
+                color: t.colors.headerText,
+                border: t.colors.headerBorder ? `2px solid ${t.colors.headerBorder}` : 'none'
+              }}
             >
               {t.label}
             </button>
@@ -241,13 +248,16 @@ const InputSection: React.FC<InputSectionProps> = ({
                 <button
                   key={key}
                   onClick={() => setKittyVariant(key as KittyVariant)}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all ${
+                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${
                     kittyVariant === key 
                       ? 'ring-2 ring-offset-1 ring-pink-400 shadow-sm' 
                       : 'hover:bg-gray-200 bg-white border border-gray-200'
                   }`}
                 >
-                  <span className={`inline-block w-3 h-3 rounded-full mr-2 ${variant.colors.header}`}></span>
+                  <span 
+                    className="inline-block w-3 h-3 rounded-full mr-2"
+                    style={{ background: variant.colors.header }}
+                  ></span>
                   {variant.label}
                 </button>
               ))}
@@ -263,9 +273,10 @@ const InputSection: React.FC<InputSectionProps> = ({
       <div className="flex justify-center">
         <button
           onClick={onGenerate}
-          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xl font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all transform active:scale-95"
+          disabled={isExporting}
+          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xl font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all transform active:scale-95 disabled:opacity-70 disabled:scale-100"
         >
-          Generate Bingo Card
+          {isExporting ? 'Generating...' : 'Generate & Open Card'}
         </button>
       </div>
     </div>
