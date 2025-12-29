@@ -5,7 +5,7 @@ import jsPDF from 'jspdf';
 import { ArrowLeft, Image as ImageIcon, FileText, Shuffle } from 'lucide-react';
 import InputSection from './components/InputSection';
 import BingoCard from './components/BingoCard';
-import { DEFAULT_RESOLUTIONS } from './constants';
+import { DEFAULT_RESOLUTIONS, ResolutionModeKey } from './constants';
 import { Theme, KittyVariant } from './themes';
 
 function App() {
@@ -20,6 +20,7 @@ function App() {
   const [freeSpaceText, setFreeSpaceText] = useState("FREE SPACE");
   const [theme, setTheme] = useState<Theme>('classic');
   const [kittyVariant, setKittyVariant] = useState<KittyVariant>('orange');
+  const [resolutionMode, setResolutionMode] = useState<ResolutionModeKey>('random_uwu');
   const previewContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -128,6 +129,8 @@ function App() {
                 setTheme={setTheme}
                 kittyVariant={kittyVariant}
                 setKittyVariant={setKittyVariant}
+                resolutionMode={resolutionMode}
+                setResolutionMode={setResolutionMode}
               />
             </motion.div>
           ) : (

@@ -1,6 +1,6 @@
 import React from 'react';
-import { Shuffle, Trash2, Wand2, Star, RefreshCw, Palette, Cat } from 'lucide-react';
-import { DEFAULT_RESOLUTIONS } from '../constants';
+import { Shuffle, Trash2, Wand2, Star, RefreshCw, Palette, Cat, List } from 'lucide-react';
+import { DEFAULT_RESOLUTIONS, RESOLUTION_MODES, ResolutionModeKey } from '../constants';
 import { Theme, THEMES, KittyVariant, KITTY_VARIANTS } from '../themes';
 
 interface InputSectionProps {
@@ -15,6 +15,8 @@ interface InputSectionProps {
   setTheme: (theme: Theme) => void;
   kittyVariant: KittyVariant;
   setKittyVariant: (variant: KittyVariant) => void;
+  resolutionMode: ResolutionModeKey;
+  setResolutionMode: (mode: ResolutionModeKey) => void;
 }
 
 const InputSection: React.FC<InputSectionProps> = ({ 
@@ -28,7 +30,9 @@ const InputSection: React.FC<InputSectionProps> = ({
   theme,
   setTheme,
   kittyVariant,
-  setKittyVariant
+  setKittyVariant,
+  resolutionMode,
+  setResolutionMode
 }) => {
   
   const handleChange = (index: number, value: string) => {
@@ -47,16 +51,18 @@ const InputSection: React.FC<InputSectionProps> = ({
   };
 
   const handleFillDefaults = () => {
-    const shuffledDefaults = [...DEFAULT_RESOLUTIONS].sort(() => Math.random() - 0.5);
+    const sourceResolutions = RESOLUTION_MODES[resolutionMode].resolutions;
+    const shuffledDefaults = [...sourceResolutions].sort(() => Math.random() - 0.5);
     // Fill up to 25
     setResolutions(shuffledDefaults.slice(0, 25));
   };
 
   const handleRefreshOne = (index: number) => {
+    const sourceResolutions = RESOLUTION_MODES[resolutionMode].resolutions;
     // Find resolutions that are NOT currently in the list
-    const available = DEFAULT_RESOLUTIONS.filter(r => !resolutions.includes(r));
+    const available = sourceResolutions.filter(r => !resolutions.includes(r));
     
-    if (available.length === 0) return; // Should not happen with 200 items
+    if (available.length === 0) return; 
     
     const random = available[Math.floor(Math.random() * available.length)];
     const newRes = [...resolutions];
@@ -164,11 +170,49 @@ const InputSection: React.FC<InputSectionProps> = ({
         </div>
       </div>
 
+      {/* Resolution Mode Selector */}
+      <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
+          <div className="flex items-center gap-2 text-blue-800 font-bold">
+            <List size={20} />
+            <span>Resolution Theme</span>
+          </div>
+          <button 
+            onClick={handleFillDefaults}
+            className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+            title="Shuffle and fill with current theme"
+          >
+            <Shuffle size={16} />
+            Shuffle & Fill
+          </button>
+        </div>
+        <div className="flex flex-wrap gap-3">
+          {Object.entries(RESOLUTION_MODES).map(([key, mode]) => (
+            <button
+              key={key}
+              onClick={() => {
+                setResolutionMode(key as ResolutionModeKey);
+              }}
+              className={`px-4 py-2 rounded-lg font-medium transition-all transform hover:scale-105 ${
+                resolutionMode === key 
+                  ? 'bg-blue-600 text-white shadow-md scale-105' 
+                  : 'bg-white text-blue-800 hover:bg-blue-100 border border-blue-200'
+              }`}
+            >
+              {mode.label}
+            </button>
+          ))}
+        </div>
+        <p className="mt-2 text-xs text-blue-600/80">
+          Select a theme and click "Shuffle & Fill" to populate with new goals!
+        </p>
+      </div>
+
       {/* Theme Selector */}
       <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
         <div className="flex items-center gap-2 mb-3 text-gray-700 font-bold">
           <Palette size={20} />
-          <span>Choose Theme</span>
+          <span>Bingo Card Theme</span>
         </div>
         <div className="flex flex-wrap gap-3 mb-4">
           {Object.values(THEMES).map((t) => (
