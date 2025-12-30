@@ -1,11 +1,12 @@
-import React from 'react';
-import { Shuffle, Trash2, Wand2, Star, RefreshCw, Palette, Cat, List } from 'lucide-react';
-import { DEFAULT_RESOLUTIONS, RESOLUTION_MODES, ResolutionModeKey } from '../constants';
+import React, { useRef, useEffect, useCallback, Dispatch, SetStateAction } from 'react';
+import { Shuffle, Trash2, Wand2, Star, Palette, Cat, List } from 'lucide-react';
+import { RESOLUTION_MODES, ResolutionModeKey } from '../constants';
 import { Theme, THEMES, KittyVariant, KITTY_VARIANTS } from '../themes';
+import ResolutionItem from './ResolutionItem';
 
 interface InputSectionProps {
   resolutions: string[];
-  setResolutions: (res: string[]) => void;
+  setResolutions: Dispatch<SetStateAction<string[]>>;
   onGenerate: () => void;
   enableFreeSpace: boolean;
   setEnableFreeSpace: (enable: boolean) => void;
@@ -41,15 +42,22 @@ const InputSection: React.FC<InputSectionProps> = ({
   setUserName
 }) => {
   
-  const handleChange = (index: number, value: string) => {
-    const newRes = [...resolutions];
-    newRes[index] = value;
-    setResolutions(newRes);
-  };
+  // Ref to hold the latest resolutions to avoid re-creating callbacks
+  const resolutionsRef = useRef(resolutions);
+  useEffect(() => {
+    resolutionsRef.current = resolutions;
+  }, [resolutions]);
+
+  const handleChange = useCallback((index: number, value: string) => {
+    setResolutions((prev) => {
+      const newRes = [...prev];
+      newRes[index] = value;
+      return newRes;
+    });
+  }, [setResolutions]);
 
   const handleShuffle = () => {
-    const shuffled = [...resolutions].sort(() => Math.random() - 0.5);
-    setResolutions(shuffled);
+    setResolutions((prev) => [...prev].sort(() => Math.random() - 0.5));
   };
 
   const handleClear = () => {
@@ -63,18 +71,22 @@ const InputSection: React.FC<InputSectionProps> = ({
     setResolutions(shuffledDefaults.slice(0, 25));
   };
 
-  const handleRefreshOne = (index: number) => {
+  const handleRefreshOne = useCallback((index: number) => {
+    const currentResolutions = resolutionsRef.current;
     const sourceResolutions = RESOLUTION_MODES[resolutionMode].resolutions;
     // Find resolutions that are NOT currently in the list
-    const available = sourceResolutions.filter(r => !resolutions.includes(r));
+    const available = sourceResolutions.filter(r => !currentResolutions.includes(r));
     
     if (available.length === 0) return; 
     
     const random = available[Math.floor(Math.random() * available.length)];
-    const newRes = [...resolutions];
-    newRes[index] = random;
-    setResolutions(newRes);
-  };
+    
+    setResolutions((prev) => {
+      const newRes = [...prev];
+      newRes[index] = random;
+      return newRes;
+    });
+  }, [resolutionMode, setResolutions]);
 
   // We always maintain 25 items in state.
   // If Free Space is ON, we visually hide the 13th item (index 12) or show a placeholder.
@@ -87,7 +99,7 @@ const InputSection: React.FC<InputSectionProps> = ({
       
       if (enableFreeSpace && isCenter) {
         inputs.push(
-          <div key="free-space" className="relative group flex items-center justify-center bg-yellow-50 border-4 border-yellow-200 rounded-3xl h-28 overflow-hidden shadow-sm">
+          <div key="free-space" className="relative group flex items-center justify-center bg-yellow-50 border-4 border-yellow-200 rounded-3xl h-28 overflow-hidden shadow-sm transition-transform duration-300 hover:scale-[1.02]">
             <div className="text-center text-yellow-600 font-bold flex flex-col items-center w-full h-full p-2 justify-center">
               <div className="flex items-center gap-1 mb-1 text-xs uppercase tracking-wider opacity-70">
                 <Star size={14} fill="currentColor" />
@@ -105,30 +117,13 @@ const InputSection: React.FC<InputSectionProps> = ({
         );
       } else {
         inputs.push(
-          <div key={i} className="relative group">
-            <span className="absolute -top-3 -left-3 w-8 h-8 bg-white text-gray-400 border-2 border-gray-100 rounded-full flex items-center justify-center text-xs font-black shadow-sm z-10">
-              {i + 1}
-            </span>
-            <button 
-              onClick={() => handleRefreshOne(i)}
-              className="absolute top-2 right-2 p-2 text-gray-300 hover:text-cyan-500 hover:bg-cyan-50 rounded-full transition-all z-20 active:scale-90 active:bg-cyan-100 active:text-cyan-600"
-              title="Get new random resolution"
-            >
-              <RefreshCw size={16} strokeWidth={3} />
-            </button>
-            <textarea
-              value={resolutions[i] || ""}
-              onChange={(e) => handleChange(i, e.target.value)}
-              maxLength={80}
-              placeholder={`Goal #${i + 1}`}
-              className="w-full h-28 p-4 pt-5 text-sm font-medium border-2 border-gray-100 rounded-3xl focus:border-cyan-300 focus:ring-4 focus:ring-cyan-100 transition-all resize-none bg-gray-50 focus:bg-white pr-8 shadow-sm hover:border-gray-200"
-            />
-            <div className={`absolute bottom-2 right-3 text-[10px] font-bold pointer-events-none transition-colors ${
-              (resolutions[i] || "").length > 70 ? 'text-red-400' : 'text-gray-300'
-            }`}>
-              {(resolutions[i] || "").length}/80
-            </div>
-          </div>
+          <ResolutionItem
+            key={i}
+            index={i}
+            value={resolutions[i]}
+            onChange={handleChange}
+            onRefresh={handleRefreshOne}
+          />
         );
       }
     }
@@ -161,7 +156,7 @@ const InputSection: React.FC<InputSectionProps> = ({
           </div>
           <button 
             onClick={() => setEnableFreeSpace(!enableFreeSpace)}
-            className={`flex items-center gap-2 px-5 py-3 rounded-2xl transition-all font-bold border-b-4 transform active:scale-95 ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-2xl transition-all font-bold border-b-4 transform active:scale-95 hover:scale-105 ${
               enableFreeSpace 
                 ? 'bg-yellow-100 text-yellow-600 border-yellow-300 hover:bg-yellow-200' 
                 : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'
@@ -173,21 +168,21 @@ const InputSection: React.FC<InputSectionProps> = ({
 
           <button 
             onClick={handleFillDefaults}
-            className="flex items-center gap-2 px-5 py-3 bg-cyan-100 text-cyan-600 rounded-2xl hover:bg-cyan-200 transition-all font-bold border-b-4 border-cyan-200 active:scale-95"
+            className="flex items-center gap-2 px-5 py-3 bg-cyan-100 text-cyan-600 rounded-2xl hover:bg-cyan-200 transition-all font-bold border-b-4 border-cyan-200 active:scale-95 hover:scale-105"
           >
             <Wand2 size={20} strokeWidth={3} />
             Auto-Fill
           </button>
           <button 
             onClick={handleShuffle}
-            className="flex items-center gap-2 px-5 py-3 bg-lime-100 text-lime-600 rounded-2xl hover:bg-lime-200 transition-all font-bold border-b-4 border-lime-200 active:scale-95"
+            className="flex items-center gap-2 px-5 py-3 bg-lime-100 text-lime-600 rounded-2xl hover:bg-lime-200 transition-all font-bold border-b-4 border-lime-200 active:scale-95 hover:scale-105"
           >
             <Shuffle size={20} strokeWidth={3} />
             Shuffle
           </button>
           <button 
             onClick={handleClear}
-            className="flex items-center gap-2 px-5 py-3 bg-red-100 text-red-500 rounded-2xl hover:bg-red-200 transition-all font-bold border-b-4 border-red-200 active:scale-95"
+            className="flex items-center gap-2 px-5 py-3 bg-red-100 text-red-500 rounded-2xl hover:bg-red-200 transition-all font-bold border-b-4 border-red-200 active:scale-95 hover:scale-105"
           >
             <Trash2 size={20} strokeWidth={3} />
             Clear

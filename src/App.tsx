@@ -150,20 +150,22 @@ function App() {
       </header>
 
       <main className="container mx-auto px-4 pb-20 relative z-10">
-        {/* Hidden container for high-res export - Always rendered to ensure ref is available */}
-        <div style={{ position: 'fixed', left: '-9999px', top: 0 }}>
-           <div className="bg-white p-0 inline-block"> 
-              <BingoCard 
-                ref={cardRef} 
-                resolutions={resolutions} 
-                enableFreeSpace={enableFreeSpace}
-                freeSpaceText={freeSpaceText}
-                theme={theme}
-                kittyVariant={kittyVariant}
-                userName={userName}
-              />
+        {/* Hidden container for high-res export - Only rendered in preview mode to save resources */}
+        {view === 'preview' && (
+          <div style={{ position: 'fixed', left: '-9999px', top: 0 }}>
+             <div className="bg-white p-0 inline-block"> 
+                <BingoCard 
+                  ref={cardRef} 
+                  resolutions={resolutions} 
+                  enableFreeSpace={enableFreeSpace}
+                  freeSpaceText={freeSpaceText}
+                  theme={theme}
+                  kittyVariant={kittyVariant}
+                  userName={userName}
+                />
+             </div>
            </div>
-         </div>
+        )}
 
         <AnimatePresence mode="wait">
           {view === 'input' ? (
