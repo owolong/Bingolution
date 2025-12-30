@@ -87,17 +87,17 @@ const InputSection: React.FC<InputSectionProps> = ({
       
       if (enableFreeSpace && isCenter) {
         inputs.push(
-          <div key="free-space" className="relative group flex items-center justify-center bg-yellow-100 border-2 border-yellow-300 rounded-xl h-24 overflow-hidden">
-            <div className="text-center text-yellow-700 font-bold flex flex-col items-center w-full h-full p-2">
+          <div key="free-space" className="relative group flex items-center justify-center bg-yellow-50 border-4 border-yellow-200 rounded-3xl h-28 overflow-hidden shadow-sm">
+            <div className="text-center text-yellow-600 font-bold flex flex-col items-center w-full h-full p-2 justify-center">
               <div className="flex items-center gap-1 mb-1 text-xs uppercase tracking-wider opacity-70">
-                <Star size={12} fill="currentColor" />
+                <Star size={14} fill="currentColor" />
                 <span>Center</span>
               </div>
               <input 
                 type="text"
                 value={freeSpaceText}
                 onChange={(e) => setFreeSpaceText(e.target.value)}
-                className="bg-transparent text-center w-full font-black text-lg focus:outline-none focus:border-b-2 border-yellow-500/50 placeholder-yellow-700/30"
+                className="bg-transparent text-center w-full font-black text-xl focus:outline-none focus:border-b-2 border-yellow-400/50 placeholder-yellow-700/30"
                 placeholder="FREE SPACE"
               />
             </div>
@@ -106,21 +106,21 @@ const InputSection: React.FC<InputSectionProps> = ({
       } else {
         inputs.push(
           <div key={i} className="relative group">
-            <span className="absolute -top-2 -left-2 w-6 h-6 bg-gray-200 text-gray-600 rounded-full flex items-center justify-center text-xs font-bold shadow-sm z-10">
+            <span className="absolute -top-3 -left-3 w-8 h-8 bg-white text-gray-400 border-2 border-gray-100 rounded-full flex items-center justify-center text-xs font-black shadow-sm z-10">
               {i + 1}
             </span>
             <button 
               onClick={() => handleRefreshOne(i)}
-              className="absolute top-2 right-2 p-1.5 text-gray-400 hover:text-indigo-600 hover:bg-indigo-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 z-20"
+              className="absolute top-2 right-2 p-2 text-gray-300 hover:text-cyan-500 hover:bg-cyan-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 z-20"
               title="Get new random resolution"
             >
-              <RefreshCw size={14} />
+              <RefreshCw size={16} strokeWidth={3} />
             </button>
             <textarea
               value={resolutions[i] || ""}
               onChange={(e) => handleChange(i, e.target.value)}
               placeholder={`Goal #${i + 1}`}
-              className="w-full h-24 p-3 pt-4 text-sm border-2 border-gray-200 rounded-xl focus:border-indigo-500 focus:ring-2 focus:ring-indigo-200 transition-all resize-none bg-gray-50 focus:bg-white pr-8"
+              className="w-full h-28 p-4 pt-5 text-sm font-medium border-2 border-gray-100 rounded-3xl focus:border-cyan-300 focus:ring-4 focus:ring-cyan-100 transition-all resize-none bg-gray-50 focus:bg-white pr-8 shadow-sm hover:border-gray-200"
             />
           </div>
         );
@@ -130,74 +130,78 @@ const InputSection: React.FC<InputSectionProps> = ({
   };
 
   return (
-    <div className="w-full max-w-4xl mx-auto p-6 bg-white/90 backdrop-blur-sm rounded-2xl shadow-xl border border-white/20">
-      <div className="flex flex-col md:flex-row justify-between items-center mb-6 gap-4">
-        <div>
-          <h2 className="text-2xl font-bold text-gray-800">Customize Your Resolutions</h2>
-          <p className="text-gray-500">
-            {enableFreeSpace ? "Enter 24 goals for the new year." : "Enter 25 goals for the new year."}
+    <div className="w-full max-w-4xl mx-auto p-8 bg-white/95 backdrop-blur-sm rounded-[2.5rem] shadow-[0_20px_60px_-15px_rgba(0,0,0,0.1)] border-4 border-white ring-4 ring-cyan-100">
+      <div className="flex flex-col md:flex-row justify-between items-center mb-8 gap-6">
+        <div className="text-center md:text-left">
+          <h2 className="text-3xl font-black text-gray-800 mb-2" style={{ fontFamily: '"Fredoka", sans-serif' }}>
+            <span className="text-fuchsia-500">Customize</span> Your Goals!
+          </h2>
+          <p className="text-gray-500 font-medium bg-cyan-50 inline-block px-4 py-1 rounded-full text-sm">
+            {enableFreeSpace ? "✨ Enter 24 goals for the new year ✨" : "✨ Enter 25 goals for the new year ✨"}
           </p>
         </div>
         
-        <div className="flex flex-wrap gap-2 justify-center md:justify-end">
-          <div className="flex items-center gap-2 mr-2">
+        <div className="flex flex-wrap gap-3 justify-center md:justify-end">
+          <div className="flex items-center gap-2 mr-2 bg-white p-1 rounded-2xl border-2 border-gray-100 shadow-sm">
             <input
               type="text"
               value={userName}
               onChange={(e) => setUserName(e.target.value)}
               placeholder="Your Name (Optional)"
-              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+              className="px-4 py-2 rounded-xl focus:outline-none text-gray-600 font-bold placeholder-gray-300 w-48 text-center"
             />
           </div>
           <button 
             onClick={() => setEnableFreeSpace(!enableFreeSpace)}
-            className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium border ${
+            className={`flex items-center gap-2 px-5 py-3 rounded-2xl transition-all font-bold border-b-4 transform active:scale-95 ${
               enableFreeSpace 
-                ? 'bg-yellow-100 text-yellow-800 border-yellow-300 hover:bg-yellow-200' 
-                : 'bg-gray-100 text-gray-600 border-gray-300 hover:bg-gray-200'
+                ? 'bg-yellow-100 text-yellow-600 border-yellow-300 hover:bg-yellow-200' 
+                : 'bg-gray-100 text-gray-500 border-gray-200 hover:bg-gray-200'
             }`}
           >
-            <Star size={18} fill={enableFreeSpace ? "currentColor" : "none"} />
+            <Star size={20} fill={enableFreeSpace ? "currentColor" : "none"} strokeWidth={3} />
             {enableFreeSpace ? "Free Space: ON" : "Free Space: OFF"}
           </button>
 
           <button 
             onClick={handleFillDefaults}
-            className="flex items-center gap-2 px-4 py-2 bg-indigo-100 text-indigo-700 rounded-lg hover:bg-indigo-200 transition-colors font-medium"
+            className="flex items-center gap-2 px-5 py-3 bg-cyan-100 text-cyan-600 rounded-2xl hover:bg-cyan-200 transition-all font-bold border-b-4 border-cyan-200 active:scale-95"
           >
-            <Wand2 size={18} />
+            <Wand2 size={20} strokeWidth={3} />
             Auto-Fill
           </button>
           <button 
             onClick={handleShuffle}
-            className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 transition-colors font-medium"
+            className="flex items-center gap-2 px-5 py-3 bg-lime-100 text-lime-600 rounded-2xl hover:bg-lime-200 transition-all font-bold border-b-4 border-lime-200 active:scale-95"
           >
-            <Shuffle size={18} />
+            <Shuffle size={20} strokeWidth={3} />
             Shuffle
           </button>
           <button 
             onClick={handleClear}
-            className="flex items-center gap-2 px-4 py-2 bg-red-100 text-red-700 rounded-lg hover:bg-red-200 transition-colors font-medium"
+            className="flex items-center gap-2 px-5 py-3 bg-red-100 text-red-500 rounded-2xl hover:bg-red-200 transition-all font-bold border-b-4 border-red-200 active:scale-95"
           >
-            <Trash2 size={18} />
+            <Trash2 size={20} strokeWidth={3} />
             Clear
           </button>
         </div>
       </div>
 
       {/* Resolution Mode Selector */}
-      <div className="mb-8 p-4 bg-blue-50 rounded-xl border border-blue-200">
-        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-3">
-          <div className="flex items-center gap-2 text-blue-800 font-bold">
-            <List size={20} />
-            <span>Resolution Theme</span>
+      <div className="mb-8 p-6 bg-fuchsia-50 rounded-3xl border-4 border-fuchsia-100">
+        <div className="flex flex-col sm:flex-row justify-between items-start sm:items-center gap-4 mb-4">
+          <div className="flex items-center gap-3 text-fuchsia-600 font-black text-lg">
+            <div className="bg-white p-2 rounded-xl shadow-sm">
+              <List size={24} strokeWidth={3} />
+            </div>
+            <span>Choose a Theme Pack</span>
           </div>
           <button 
             onClick={handleFillDefaults}
-            className="flex items-center gap-2 px-3 py-1.5 bg-blue-100 text-blue-700 rounded-lg hover:bg-blue-200 transition-colors text-sm font-medium"
+            className="flex items-center gap-2 px-4 py-2 bg-white text-fuchsia-500 rounded-xl hover:bg-fuchsia-100 transition-colors text-sm font-bold shadow-sm border-2 border-fuchsia-100"
             title="Shuffle and fill with current theme"
           >
-            <Shuffle size={16} />
+            <Shuffle size={16} strokeWidth={3} />
             Shuffle & Fill
           </button>
         </div>
@@ -208,41 +212,43 @@ const InputSection: React.FC<InputSectionProps> = ({
               onClick={() => {
                 setResolutionMode(key as ResolutionModeKey);
               }}
-              className={`px-4 py-2 rounded-lg font-medium transition-all transform hover:scale-105 ${
+              className={`px-5 py-3 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 border-b-4 ${
                 resolutionMode === key 
-                  ? 'bg-blue-600 text-white shadow-md scale-105' 
-                  : 'bg-white text-blue-800 hover:bg-blue-100 border border-blue-200'
+                  ? 'bg-fuchsia-500 text-white shadow-lg border-fuchsia-700 scale-105' 
+                  : 'bg-white text-fuchsia-500 hover:bg-fuchsia-50 border-fuchsia-200'
               }`}
             >
               {mode.label}
             </button>
           ))}
         </div>
-        <p className="mt-2 text-xs text-blue-600/80">
+        <p className="mt-3 text-sm text-fuchsia-400 font-medium ml-1">
           Select a theme and click "Shuffle & Fill" to populate with new goals!
         </p>
       </div>
 
       {/* Theme Selector */}
-      <div className="mb-8 p-4 bg-gray-50 rounded-xl border border-gray-200">
-        <div className="flex items-center gap-2 mb-3 text-gray-700 font-bold">
-          <Palette size={20} />
-          <span>Bingo Card Theme</span>
+      <div className="mb-8 p-6 bg-lime-50 rounded-3xl border-4 border-lime-100">
+        <div className="flex items-center gap-3 mb-4 text-lime-600 font-black text-lg">
+          <div className="bg-white p-2 rounded-xl shadow-sm">
+            <Palette size={24} strokeWidth={3} />
+          </div>
+          <span>Card Style</span>
         </div>
-        <div className="flex flex-wrap gap-3 mb-4">
+        <div className="flex flex-wrap gap-4 mb-4">
           {Object.values(THEMES).map((t) => (
             <button
               key={t.id}
               onClick={() => setTheme(t.id)}
-              className={`px-4 py-2 rounded-lg font-medium transition-all transform hover:scale-105 ${
+              className={`px-6 py-3 rounded-2xl font-bold transition-all transform hover:scale-105 active:scale-95 shadow-sm ${
                 theme === t.id 
-                  ? 'ring-2 ring-offset-2 ring-indigo-500 shadow-md scale-105' 
-                  : 'hover:bg-gray-200'
+                  ? 'ring-4 ring-offset-2 ring-lime-300 scale-105' 
+                  : 'hover:opacity-90'
               }`}
               style={{ 
                 background: t.colors.header, 
                 color: t.colors.headerText,
-                border: t.colors.headerBorder ? `2px solid ${t.colors.headerBorder}` : 'none'
+                border: t.colors.headerBorder ? `3px solid ${t.colors.headerBorder}` : 'none'
               }}
             >
               {t.label}
@@ -251,24 +257,24 @@ const InputSection: React.FC<InputSectionProps> = ({
         </div>
 
         {theme === 'kitty' && (
-          <div className="mt-4 pt-4 border-t border-gray-200">
-            <div className="flex items-center gap-2 mb-3 text-gray-700 font-bold text-sm">
-              <Cat size={16} />
+          <div className="mt-6 pt-6 border-t-2 border-lime-200 border-dashed">
+            <div className="flex items-center gap-2 mb-3 text-lime-600 font-bold text-sm uppercase tracking-wide">
+              <Cat size={18} strokeWidth={2.5} />
               <span>Kitty Color</span>
             </div>
-            <div className="flex flex-wrap gap-2">
+            <div className="flex flex-wrap gap-3">
               {Object.entries(KITTY_VARIANTS).map(([key, variant]) => (
                 <button
                   key={key}
                   onClick={() => setKittyVariant(key as KittyVariant)}
-                  className={`px-3 py-1.5 rounded-md text-sm font-medium transition-all flex items-center ${
+                  className={`px-4 py-2 rounded-xl text-sm font-bold transition-all flex items-center border-2 ${
                     kittyVariant === key 
-                      ? 'ring-2 ring-offset-1 ring-pink-400 shadow-sm' 
-                      : 'hover:bg-gray-200 bg-white border border-gray-200'
+                      ? 'bg-lime-50 border-lime-300 text-lime-600 shadow-sm' 
+                      : 'bg-white border-gray-200 text-gray-500 hover:border-lime-200'
                   }`}
                 >
                   <span 
-                    className="inline-block w-3 h-3 rounded-full mr-2"
+                    className="inline-block w-4 h-4 rounded-full mr-2 border border-black/10"
                     style={{ background: variant.colors.header }}
                   ></span>
                   {variant.label}
@@ -279,7 +285,7 @@ const InputSection: React.FC<InputSectionProps> = ({
         )}
       </div>
 
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-3 mb-8">
+      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-5 gap-4 mb-10">
         {renderInputs()}
       </div>
 
@@ -287,9 +293,9 @@ const InputSection: React.FC<InputSectionProps> = ({
         <button
           onClick={onGenerate}
           disabled={isExporting}
-          className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xl font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all transform active:scale-95 disabled:opacity-70 disabled:scale-100"
+          className="px-10 py-5 bg-gradient-to-r from-fuchsia-500 via-purple-500 to-cyan-500 text-white text-2xl font-black rounded-3xl shadow-[0_10px_40px_-10px_rgba(217,70,239,0.4)] hover:shadow-[0_20px_40px_-10px_rgba(217,70,239,0.5)] hover:scale-105 transition-all transform active:scale-95 disabled:opacity-70 disabled:scale-100 border-b-8 border-fuchsia-700 active:border-b-0 active:translate-y-2"
         >
-          {isExporting ? 'Generating...' : 'Preview Bingo Card'}
+          {isExporting ? 'Generating...' : 'Preview Bingo Card! 🎨'}
         </button>
       </div>
     </div>

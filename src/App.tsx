@@ -119,15 +119,37 @@ function App() {
   };
 
   return (
-    <div className="min-h-screen bg-gradient-to-br from-indigo-50 via-purple-50 to-pink-50 text-gray-800 font-sans selection:bg-indigo-200">
+    <div className="min-h-screen bg-[#f0fdfa] text-gray-800 font-sans selection:bg-cyan-200 overflow-x-hidden">
+      {/* Cute Background Pattern */}
+      <div className="fixed inset-0 z-0 opacity-40 pointer-events-none" 
+           style={{ 
+             backgroundImage: 'radial-gradient(#2dd4bf 2px, transparent 2px), radial-gradient(#e879f9 2px, transparent 2px)',
+             backgroundSize: '40px 40px',
+             backgroundPosition: '0 0, 20px 20px'
+           }}>
+      </div>
       
-      <header className="py-8 text-center px-4">
-        <h1 className="text-4xl md:text-5xl font-black text-transparent bg-clip-text bg-gradient-to-r from-indigo-600 to-purple-600 mb-2">
+      <header className="py-8 text-center px-4 relative z-10">
+        <motion.h1 
+          initial={{ scale: 0.5, opacity: 0 }}
+          animate={{ scale: 1, opacity: 1 }}
+          transition={{ type: "spring", stiffness: 300, damping: 15 }}
+          className="text-6xl md:text-8xl font-black text-fuchsia-600 mb-2 drop-shadow-sm"
+          style={{ 
+            fontFamily: '"Fredoka", sans-serif', 
+            textShadow: '4px 4px 0px #ffffff, 6px 6px 0px rgba(0,0,0,0.1)',
+            WebkitTextStroke: '3px #ffffff',
+            paintOrder: 'stroke fill'
+          }}
+        >
           Bingolution
-        </h1>
+        </motion.h1>
+        <p className="text-cyan-700 font-bold text-xl tracking-wide bg-white/50 inline-block px-6 py-2 rounded-full backdrop-blur-sm shadow-sm border border-white/50">
+          ✨ 2025 New Year's Resolution Generator ✨
+        </p>
       </header>
 
-      <main className="container mx-auto px-4 pb-20">
+      <main className="container mx-auto px-4 pb-20 relative z-10">
         {/* Hidden container for high-res export - Always rendered to ensure ref is available */}
         <div style={{ position: 'fixed', left: '-9999px', top: 0 }}>
            <div className="bg-white p-0 inline-block"> 
@@ -183,40 +205,40 @@ function App() {
               transition={{ duration: 0.3 }}
               className="flex flex-col items-center"
             >
-              <div className="flex flex-wrap justify-center gap-3 mb-8 sticky top-4 z-50 bg-white/80 backdrop-blur-md p-3 rounded-2xl shadow-lg border border-white/20 max-w-full">
+              <div className="flex flex-wrap justify-center gap-4 mb-8 sticky top-4 z-50 bg-white/90 backdrop-blur-md p-4 rounded-3xl shadow-[0_8px_30px_rgb(0,0,0,0.12)] border-4 border-cyan-100 max-w-full">
                 <button
                   onClick={() => setView('input')}
-                  className="flex items-center gap-2 px-4 py-2 bg-gray-100 text-gray-700 rounded-lg hover:bg-gray-200 font-bold transition-all text-sm md:text-base"
+                  className="flex items-center gap-2 px-6 py-3 bg-gray-100 text-gray-600 rounded-2xl hover:bg-gray-200 font-bold transition-all transform hover:scale-105 active:scale-95 border-b-4 border-gray-300 hover:border-gray-400"
                 >
-                  <ArrowLeft size={18} />
+                  <ArrowLeft size={20} strokeWidth={3} />
                   Edit
                 </button>
                 <button
                   onClick={handleShuffle}
-                  className="flex items-center gap-2 px-4 py-2 bg-orange-100 text-orange-700 rounded-lg hover:bg-orange-200 font-bold transition-all text-sm md:text-base"
+                  className="flex items-center gap-2 px-6 py-3 bg-yellow-100 text-yellow-600 rounded-2xl hover:bg-yellow-200 font-bold transition-all transform hover:scale-105 active:scale-95 border-b-4 border-yellow-300 hover:border-yellow-400"
                 >
-                  <Shuffle size={18} />
+                  <Shuffle size={20} strokeWidth={3} />
                   Shuffle
                 </button>
-                <div className="w-px h-8 bg-gray-300 mx-1 hidden sm:block"></div>
+                <div className="w-px h-10 bg-cyan-200 mx-2 hidden sm:block"></div>
                 <button
                   onClick={handleDownload}
                   disabled={isExporting}
-                  className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm md:text-base"
+                  className="flex items-center gap-2 px-8 py-3 bg-gradient-to-r from-fuchsia-500 to-purple-500 text-white rounded-2xl hover:from-fuchsia-600 hover:to-purple-600 font-black shadow-lg hover:shadow-xl transition-all transform hover:scale-105 active:scale-95 border-b-4 border-fuchsia-700 disabled:opacity-50 disabled:scale-100 disabled:border-none"
                 >
-                  {isExporting ? 'Generating...' : <><ImageIcon size={18} /> Download Resolutions</>}
+                  {isExporting ? 'Generating...' : <><ImageIcon size={20} strokeWidth={3} /> Download Resolutions</>}
                 </button>
               </div>
 
                {/* Visible Preview */}
-               <div className="flex flex-col items-center gap-2 w-full max-w-[500px]">
-                 <div className="text-gray-500 text-sm font-medium uppercase tracking-wide">
+               <div className="flex flex-col items-center gap-4 w-full max-w-[500px]">
+                 <div className="bg-white px-6 py-2 rounded-full shadow-sm border-2 border-cyan-200 text-cyan-500 font-bold uppercase tracking-widest text-sm">
                    Preview
                  </div>
                  
                  <div 
                    ref={previewContainerRef}
-                   className="relative w-full aspect-[4/5] bg-gray-100 shadow-2xl rounded-xl overflow-hidden"
+                   className="relative w-full aspect-[4/5] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2rem] overflow-hidden border-8 border-white ring-4 ring-cyan-100"
                  >
                     {/* 
                       We use the calculated scale to fit the 800px card into the container.

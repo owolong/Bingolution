@@ -1,2 +1,6 @@
-@import url('https://fonts.googleapis.com/css2?family=Sigmar&display=swap');
+@import url('https://fonts.googleapis.com/css2?family=Sigmar&family=Fredoka:wght@300..700&display=swap');
 @import "tailwindcss";
+
+body {
+  font-family: 'Fredoka', sans-serif;
+}
