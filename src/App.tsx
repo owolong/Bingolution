@@ -81,7 +81,9 @@ function App() {
       const cardWidth = cardCanvas.width;
       const cardHeight = cardCanvas.height;
       
-      const margin = 100; // pixels
+      // Set margin to 0 to maximize size on A4 paper.
+      // Note: There will still be some vertical whitespace because the card (1.25 ratio) is wider than A4 (1.414 ratio).
+      const margin = 0; 
       const a4Width = cardWidth + (margin * 2);
       const a4Height = Math.floor(a4Width * 1.4142); // A4 Aspect Ratio
 
