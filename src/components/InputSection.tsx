@@ -97,7 +97,7 @@ const InputSection: React.FC<InputSectionProps> = ({
                 type="text"
                 value={freeSpaceText}
                 onChange={(e) => setFreeSpaceText(e.target.value)}
-                className="bg-transparent text-center w-full font-black text-xl focus:outline-none focus:border-b-2 border-yellow-400/50 placeholder-yellow-700/30"
+                className="bg-transparent text-center w-full font-black text-sm sm:text-xl focus:outline-none focus:border-b-2 border-yellow-400/50 placeholder-yellow-700/30 min-w-0"
                 placeholder="FREE SPACE"
               />
             </div>
@@ -111,7 +111,7 @@ const InputSection: React.FC<InputSectionProps> = ({
             </span>
             <button 
               onClick={() => handleRefreshOne(i)}
-              className="absolute top-2 right-2 p-2 text-gray-300 hover:text-cyan-500 hover:bg-cyan-50 rounded-full transition-colors opacity-0 group-hover:opacity-100 z-20"
+              className="absolute top-2 right-2 p-2 text-gray-300 hover:text-cyan-500 hover:bg-cyan-50 rounded-full transition-all z-20 active:scale-90 active:bg-cyan-100 active:text-cyan-600"
               title="Get new random resolution"
             >
               <RefreshCw size={16} strokeWidth={3} />
@@ -119,9 +119,15 @@ const InputSection: React.FC<InputSectionProps> = ({
             <textarea
               value={resolutions[i] || ""}
               onChange={(e) => handleChange(i, e.target.value)}
+              maxLength={80}
               placeholder={`Goal #${i + 1}`}
               className="w-full h-28 p-4 pt-5 text-sm font-medium border-2 border-gray-100 rounded-3xl focus:border-cyan-300 focus:ring-4 focus:ring-cyan-100 transition-all resize-none bg-gray-50 focus:bg-white pr-8 shadow-sm hover:border-gray-200"
             />
+            <div className={`absolute bottom-2 right-3 text-[10px] font-bold pointer-events-none transition-colors ${
+              (resolutions[i] || "").length > 70 ? 'text-red-400' : 'text-gray-300'
+            }`}>
+              {(resolutions[i] || "").length}/80
+            </div>
           </div>
         );
       }
@@ -136,8 +142,10 @@ const InputSection: React.FC<InputSectionProps> = ({
           <h2 className="text-3xl font-black text-gray-800 mb-2" style={{ fontFamily: '"Fredoka", sans-serif' }}>
             <span className="text-fuchsia-500">Customize</span> Your Goals!
           </h2>
-          <p className="text-gray-500 font-medium bg-cyan-50 inline-block px-4 py-1 rounded-full text-sm">
-            {enableFreeSpace ? "✨ Enter 24 goals for the new year ✨" : "✨ Enter 25 goals for the new year ✨"}
+          <p className="text-gray-500 font-medium bg-cyan-50 inline-block px-4 py-2 rounded-xl text-sm max-w-lg leading-relaxed">
+            1. Choose a <strong>Resolution Mode</strong> to get ideas.<br/>
+            2. Pick a <strong>Bingo Style</strong>.<br/>
+            3. Edit the boxes below with your own custom goals!
           </p>
         </div>
         
@@ -194,7 +202,7 @@ const InputSection: React.FC<InputSectionProps> = ({
             <div className="bg-white p-2 rounded-xl shadow-sm">
               <List size={24} strokeWidth={3} />
             </div>
-            <span>Choose a Theme Pack</span>
+            <span>Choose your Resolution Mode</span>
           </div>
           <button 
             onClick={handleFillDefaults}
@@ -233,7 +241,7 @@ const InputSection: React.FC<InputSectionProps> = ({
           <div className="bg-white p-2 rounded-xl shadow-sm">
             <Palette size={24} strokeWidth={3} />
           </div>
-          <span>Card Style</span>
+          <span>Bingo Style</span>
         </div>
         <div className="flex flex-wrap gap-4 mb-4">
           {Object.values(THEMES).map((t) => (

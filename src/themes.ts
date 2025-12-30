@@ -104,7 +104,7 @@ export const THEMES: Record<Theme, {
 }> = {
   classic: {
     id: 'classic',
-    label: 'Classic',
+    label: 'Classic Bingo',
     colors: {
       header: '#4f46e5', // indigo-600
       headerText: '#ffffff',
@@ -120,7 +120,7 @@ export const THEMES: Record<Theme, {
   },
   kitty: {
     id: 'kitty',
-    label: 'Kitty Mode',
+    label: 'Kitty Bingo',
     colors: {
       header: '#fb923c', // orange-400
       headerText: '#ffffff',
@@ -137,7 +137,7 @@ export const THEMES: Record<Theme, {
   },
   puppy: {
     id: 'puppy',
-    label: 'Puppy Mode',
+    label: 'Puppy Bingo',
     colors: {
       header: '#fb923c', // orange-400
       headerText: '#ffffff',
@@ -154,7 +154,7 @@ export const THEMES: Record<Theme, {
   },
   pokemon: {
     id: 'pokemon',
-    label: 'Pokémon Mode',
+    label: 'Pokémon Bingo',
     colors: {
       header: 'linear-gradient(to bottom, #dc2626 50%, #ffffff 50%)',
       headerText: '#facc15', // yellow-400
@@ -172,7 +172,7 @@ export const THEMES: Record<Theme, {
   },
   sushi: {
     id: 'sushi',
-    label: 'Sushi Mode',
+    label: 'Sushi Bingo',
     colors: {
       header: '#ef4444', // red-500
       headerText: '#ffffff',

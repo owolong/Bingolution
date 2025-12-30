@@ -238,7 +238,7 @@ function App() {
                  
                  <div 
                    ref={previewContainerRef}
-                   className="relative w-full aspect-[4/5] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2rem] overflow-hidden border-8 border-white ring-4 ring-cyan-100"
+                   className="relative w-full aspect-[5/7] bg-white shadow-[0_20px_50px_rgba(0,0,0,0.1)] rounded-[2rem] overflow-hidden border-8 border-white ring-4 ring-cyan-100"
                  >
                     {/* 
                       We use the calculated scale to fit the 800px card into the container.

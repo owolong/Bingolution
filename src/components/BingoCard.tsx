@@ -73,7 +73,7 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
   const renderBorderIcons = () => {
     const icons = [];
     const width = 800;
-    const height = 1000;
+    const height = 1120; // Increased height for A4 ratio
     const padding = 20; // Space from edge
     const spacing = 90; // Space between icons
 
@@ -184,13 +184,22 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
     }
   };
 
+  const getFontSize = (text: string) => {
+    if (text.length < 15) return 'text-2xl';
+    if (text.length < 30) return 'text-xl';
+    if (text.length < 50) return 'text-lg';
+    if (text.length < 70) return 'text-base';
+    if (text.length < 80) return 'text-sm';
+    return 'text-xs';
+  };
+
   return (
     <div 
       ref={ref} 
-      className={`w-[800px] h-[1000px] p-12 flex flex-col items-center mx-auto relative overflow-hidden`}
+      className={`w-[800px] h-[1120px] p-8 flex flex-col items-center mx-auto relative overflow-hidden`}
       style={{ 
         minWidth: '800px', 
-        minHeight: '1000px',
+        minHeight: '1120px',
         backgroundColor: colors.background,
         color: '#111827', // text-gray-900
         boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' // shadow-2xl
@@ -204,7 +213,7 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
       {renderHeaderDecoration()}
 
       <div 
-        className={`w-full py-8 rounded-t-xl mb-6 relative z-0 mt-4`}
+        className={`w-full py-6 rounded-t-xl mb-4 relative z-0 mt-2`}
         style={{ 
           background: colors.header, 
           color: colors.headerText,
@@ -238,14 +247,16 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
       >
         {gridItems.map((item, index) => {
           const isFreeSpace = enableFreeSpace && index === 12;
+          const fontSizeClass = isFreeSpace ? 'text-2xl' : getFontSize(item);
+          
           return (
             <div 
               key={index}
               className={`
-                relative flex items-center justify-center p-2 text-center select-none
+                relative flex items-center justify-center p-2 text-center select-none overflow-hidden
                 ${isFreeSpace 
-                  ? `font-black text-2xl rotate-0` 
-                  : `font-bold text-lg`
+                  ? `font-black rotate-0` 
+                  : `font-bold ${fontSizeClass}`
                 }
                 rounded-lg border-2
               `}
