@@ -18,6 +18,8 @@ interface InputSectionProps {
   resolutionMode: ResolutionModeKey;
   setResolutionMode: (mode: ResolutionModeKey) => void;
   isExporting?: boolean;
+  userName: string;
+  setUserName: (name: string) => void;
 }
 
 const InputSection: React.FC<InputSectionProps> = ({ 
@@ -34,7 +36,9 @@ const InputSection: React.FC<InputSectionProps> = ({
   setKittyVariant,
   resolutionMode,
   setResolutionMode,
-  isExporting = false
+  isExporting = false,
+  userName,
+  setUserName
 }) => {
   
   const handleChange = (index: number, value: string) => {
@@ -136,6 +140,15 @@ const InputSection: React.FC<InputSectionProps> = ({
         </div>
         
         <div className="flex flex-wrap gap-2 justify-center md:justify-end">
+          <div className="flex items-center gap-2 mr-2">
+            <input
+              type="text"
+              value={userName}
+              onChange={(e) => setUserName(e.target.value)}
+              placeholder="Your Name (Optional)"
+              className="px-4 py-2 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 outline-none transition-all"
+            />
+          </div>
           <button 
             onClick={() => setEnableFreeSpace(!enableFreeSpace)}
             className={`flex items-center gap-2 px-4 py-2 rounded-lg transition-colors font-medium border ${
@@ -276,7 +289,7 @@ const InputSection: React.FC<InputSectionProps> = ({
           disabled={isExporting}
           className="px-8 py-4 bg-gradient-to-r from-indigo-600 to-purple-600 text-white text-xl font-bold rounded-full shadow-lg hover:shadow-xl hover:scale-105 transition-all transform active:scale-95 disabled:opacity-70 disabled:scale-100"
         >
-          {isExporting ? 'Generating...' : 'Generate & Open Card'}
+          {isExporting ? 'Generating...' : 'Preview Bingo Card'}
         </button>
       </div>
     </div>

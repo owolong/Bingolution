@@ -13,6 +13,7 @@ interface BingoCardProps {
   enableFreeSpace?: boolean;
   freeSpaceText?: string;
   kittyVariant?: KittyVariant;
+  userName?: string;
 }
 
 const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({ 
@@ -21,7 +22,8 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
   theme = 'classic',
   enableFreeSpace = true,
   freeSpaceText = "FREE SPACE",
-  kittyVariant = 'orange'
+  kittyVariant = 'orange',
+  userName = ""
 }, ref) => {
   
   // Determine colors based on theme and potential variant
@@ -31,6 +33,17 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
   if (theme === 'kitty') {
     const variant = KITTY_VARIANTS[kittyVariant];
     colors = variant.colors;
+  }
+
+  // Determine header text and font size
+  const headerText = userName ? `${userName}'s Bingolution` : title;
+  
+  // Simple font scaling logic
+  let headerFontSize = "text-6xl";
+  if (headerText.length > 20) {
+    headerFontSize = "text-4xl";
+  } else if (headerText.length > 15) {
+    headerFontSize = "text-5xl";
   }
 
   let gridItems: string[] = [];
@@ -117,15 +130,16 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
 
       return (
         <div 
-          key={i} 
-          className={`absolute ${colorClass} opacity-60`}
+          key={i}
+          className="absolute transform transition-all duration-500"
           style={{ 
             left: pos.x, 
             top: pos.y, 
-            ...getStyle(i) 
+            ...getStyle(i),
+            color: colorClass
           }}
         >
-          <IconComponent size={32} />
+          <IconComponent size={32} fill="currentColor" className="opacity-80" />
         </div>
       );
     });
@@ -139,8 +153,8 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
 
         return (
           <div 
-            className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 z-10"
-            style={{ borderColor: borderColor, color: headerIconColor }}
+            className="absolute -top-6 left-1/2 -translate-x-1/2 p-2 rounded-full border-4 z-10"
+            style={{ borderColor: borderColor, color: headerIconColor, backgroundColor: '#ffffff' }}
           >
             <Cat size={48} />
           </div>
@@ -148,8 +162,8 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
       case 'puppy':
         return (
           <div 
-            className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 z-10"
-            style={{ borderColor: '#fb923c', color: '#f97316' }}
+            className="absolute -top-6 left-1/2 -translate-x-1/2 p-2 rounded-full border-4 z-10"
+            style={{ borderColor: '#fb923c', color: '#f97316', backgroundColor: '#ffffff' }}
           >
             <Dog size={48} />
           </div>
@@ -159,8 +173,8 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
       case 'sushi':
         return (
           <div 
-            className="absolute -top-6 left-1/2 -translate-x-1/2 bg-white p-2 rounded-full border-4 z-10"
-            style={{ borderColor: '#ef4444', color: '#ef4444' }}
+            className="absolute -top-6 left-1/2 -translate-x-1/2 p-2 rounded-full border-4 z-10"
+            style={{ borderColor: '#ef4444', color: '#ef4444', backgroundColor: '#ffffff' }}
           >
             <Fish size={48} />
           </div>
@@ -173,11 +187,13 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
   return (
     <div 
       ref={ref} 
-      className={`w-[800px] h-[1000px] p-12 flex flex-col items-center shadow-2xl mx-auto text-gray-900 relative overflow-hidden`}
+      className={`w-[800px] h-[1000px] p-12 flex flex-col items-center mx-auto relative overflow-hidden`}
       style={{ 
         minWidth: '800px', 
         minHeight: '1000px',
-        backgroundColor: colors.background
+        backgroundColor: colors.background,
+        color: '#111827', // text-gray-900
+        boxShadow: '0 25px 50px -12px rgba(0, 0, 0, 0.25)' // shadow-2xl
       }}
     >
       {/* Border Icons */}
@@ -188,24 +204,28 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
       {renderHeaderDecoration()}
 
       <div 
-        className={`w-full py-8 rounded-t-xl mb-6 relative z-0 shadow-md mt-4`}
+        className={`w-full py-8 rounded-t-xl mb-6 relative z-0 mt-4`}
         style={{ 
           background: colors.header, 
           color: colors.headerText,
-          border: colors.headerBorder ? `4px solid ${colors.headerBorder}` : 'none'
+          border: colors.headerBorder ? `4px solid ${colors.headerBorder}` : 'none',
+          boxShadow: '0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06)' // shadow-md
         }}
       >
         <h1 
-          className="text-6xl font-black text-center tracking-widest uppercase drop-shadow-md"
-          style={theme === 'pokemon' ? {
-            color: '#FFCB05', // Pokemon Yellow
-            WebkitTextStroke: '3px #3C5AA6', // Pokemon Blue
-            textShadow: '4px 4px 0 #3C5AA6',
-            fontFamily: '"Sigmar", sans-serif', // Closest free alternative to ITC Kabel Ultra
-            letterSpacing: '0.1em'
-          } : {}}
+          className={`${headerFontSize} font-black text-center tracking-widest uppercase`}
+          style={{
+            textShadow: '0 4px 6px rgba(0,0,0,0.1)', // drop-shadow-md
+            ...(theme === 'pokemon' ? {
+              color: '#FFCB05', // Pokemon Yellow
+              WebkitTextStroke: '3px #3C5AA6', // Pokemon Blue
+              textShadow: '4px 4px 0 #3C5AA6',
+              fontFamily: '"Sigmar", sans-serif',
+              letterSpacing: '0.1em'
+            } : {})
+          }}
         >
-          {title}
+          {headerText}
         </h1>
       </div>
 
@@ -227,12 +247,13 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
                   ? `font-black text-2xl rotate-0` 
                   : `font-bold text-lg`
                 }
-                rounded-lg shadow-sm border-2
+                rounded-lg border-2
               `}
               style={{
                 backgroundColor: isFreeSpace ? colors.freeSpace : colors.cell,
                 color: isFreeSpace ? colors.freeSpaceText : colors.cellText,
-                borderColor: colors.border
+                borderColor: colors.border,
+                boxShadow: '0 1px 2px 0 rgba(0, 0, 0, 0.05)' // shadow-sm
               }}
             >
               {isFreeSpace && (
@@ -253,7 +274,10 @@ const BingoCard = forwardRef<HTMLDivElement, BingoCardProps>(({
         })}
       </div>
 
-      <div className="mt-6 text-center text-gray-400 text-sm font-medium relative z-10">
+      <div 
+        className="mt-6 text-center text-sm font-medium relative z-10"
+        style={{ color: '#9ca3af' }} // text-gray-400
+      >
         Generated with Bingolution
       </div>
     </div>

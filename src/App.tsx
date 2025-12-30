@@ -20,6 +20,7 @@ function App() {
   const [theme, setTheme] = useState<Theme>('classic');
   const [kittyVariant, setKittyVariant] = useState<KittyVariant>('orange');
   const [resolutionMode, setResolutionMode] = useState<ResolutionModeKey>('random_uwu');
+  const [userName, setUserName] = useState("");
   const previewContainerRef = useRef<HTMLDivElement>(null);
 
   useEffect(() => {
@@ -43,9 +44,13 @@ function App() {
   };
 
   const handleDownload = async () => {
-    if (!cardRef.current) return;
+    if (!cardRef.current) {
+      console.error("Card ref is missing");
+      return;
+    }
     setIsExporting(true);
     try {
+      console.log("Starting export...");
       await new Promise(resolve => setTimeout(resolve, 100));
       
       // 1. Capture the bingo card at high resolution
@@ -53,8 +58,23 @@ function App() {
         scale: 2, // High quality capture
         useCORS: true,
         backgroundColor: '#ffffff',
-        logging: false,
+        logging: true, // Enable logging to see html2canvas output
+        onclone: (clonedDoc) => {
+            // Ensure the cloned element is visible
+            const clonedCard = clonedDoc.querySelector('[data-bingo-card]');
+            if (clonedCard instanceof HTMLElement) {
+                clonedCard.style.display = 'block';
+            }
+        }
       });
+
+      console.log("Canvas captured:", cardCanvas.width, "x", cardCanvas.height);
+
+      if (cardCanvas.width === 0 || cardCanvas.height === 0) {
+        alert("Error: Captured image is empty. Please try again.");
+        setIsExporting(false);
+        return;
+      }
 
       // 2. Create a new canvas representing an A4 sheet
       // A4 is 210mm x 297mm (Ratio: 1.414)
@@ -81,35 +101,17 @@ function App() {
         
         ctx.drawImage(cardCanvas, x, y);
 
-        // Open in new window
         const dataUrl = finalCanvas.toDataURL('image/jpeg', 0.9);
-        const newWindow = window.open();
-        if (newWindow) {
-          newWindow.document.write(`
-            <html>
-              <head>
-                <title>Bingolution Card</title>
-                <style>
-                  body { margin: 0; display: flex; justify-content: center; align-items: center; min-height: 100vh; background: #f0f0f0; }
-                  img { max-width: 100%; height: auto; box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1), 0 2px 4px -1px rgba(0, 0, 0, 0.06); }
-                </style>
-              </head>
-              <body>
-                <img src="${dataUrl}" alt="Bingo Card" />
-              </body>
-            </html>
-          `);
-          newWindow.document.close();
-        } else {
-          // Fallback if popup blocked
-          const link = document.createElement('a');
-          link.download = 'bingolution-card.jpg';
-          link.href = dataUrl;
-          link.click();
-        }
+        
+        // Direct download
+        const link = document.createElement('a');
+        link.download = 'Bingolution.jpg';
+        link.href = dataUrl;
+        link.click();
       }
     } catch (err) {
       console.error("Export failed", err);
+      alert("Export failed. See console for details.");
     }
     setIsExporting(false);
   };
@@ -125,7 +127,7 @@ function App() {
 
       <main className="container mx-auto px-4 pb-20">
         {/* Hidden container for high-res export - Always rendered to ensure ref is available */}
-        <div className="fixed top-0 left-0 pointer-events-none opacity-0 overflow-hidden w-0 h-0">
+        <div style={{ position: 'fixed', left: '-9999px', top: 0 }}>
            <div className="bg-white p-0 inline-block"> 
               <BingoCard 
                 ref={cardRef} 
@@ -134,6 +136,7 @@ function App() {
                 freeSpaceText={freeSpaceText}
                 theme={theme}
                 kittyVariant={kittyVariant}
+                userName={userName}
               />
            </div>
          </div>
@@ -151,12 +154,8 @@ function App() {
                 resolutions={resolutions} 
                 setResolutions={setResolutions} 
                 onGenerate={() => {
-                  // Generate (switch view) and download
+                  // Generate (switch view)
                   setView('preview');
-                  // We need to wait a bit for the view to switch? 
-                  // Actually, since the card is now always rendered, we can download immediately.
-                  // But let's give the user visual feedback of the switch first.
-                  setTimeout(handleDownload, 500);
                 }}
                 enableFreeSpace={enableFreeSpace}
                 setEnableFreeSpace={setEnableFreeSpace}
@@ -169,6 +168,8 @@ function App() {
                 resolutionMode={resolutionMode}
                 setResolutionMode={setResolutionMode}
                 isExporting={isExporting}
+                userName={userName}
+                setUserName={setUserName}
               />
             </motion.div>
           ) : (
@@ -201,7 +202,7 @@ function App() {
                   disabled={isExporting}
                   className="flex items-center gap-2 px-6 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 font-bold shadow-md hover:shadow-lg transition-all disabled:opacity-50 text-sm md:text-base"
                 >
-                  {isExporting ? 'Generating...' : <><ImageIcon size={18} /> Open JPG</>}
+                  {isExporting ? 'Generating...' : <><ImageIcon size={18} /> Download Resolutions</>}
                 </button>
               </div>
 
@@ -229,6 +230,7 @@ function App() {
                          freeSpaceText={freeSpaceText}
                          theme={theme}
                          kittyVariant={kittyVariant}
+                         userName={userName}
                        />
                     </div>
                  </div>
